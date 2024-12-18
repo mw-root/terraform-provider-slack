@@ -4,7 +4,8 @@ build:
 	go build -v ./...
 
 install: build
-	go install -v ./...
+	go install -v ./... ;\
+    cp ${HOME}/go/bin/terraform-provider-slack ${HOME}/.terraform.d/plugins/terraform.local.com/mw-root/slack/0.0.1/darwin_arm64/terraform-provider-slack
 
 lint:
 	golangci-lint run

@@ -40,6 +40,12 @@ func (p *SlackProvider) Metadata(ctx context.Context, req provider.MetadataReque
 
 func (p *SlackProvider) Schema(ctx context.Context, req provider.SchemaRequest, resp *provider.SchemaResponse) {
 	resp.Schema = schema.Schema{
+		MarkdownDescription: `
+A provider to interact with and manage Slack resources.
+
+A slack bot and its OAuth token is required to make use of this provider. 
+Each resource and data source will document the permissions (Bot Token Scopes) required to perform that operation.
+`,
 		Attributes: map[string]schema.Attribute{
 			"token": schema.StringAttribute{
 				MarkdownDescription: "Slack API Token. This can also be set by configuring the `SLACK_TOKEN` environment variable.",

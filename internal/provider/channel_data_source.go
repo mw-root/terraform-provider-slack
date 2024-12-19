@@ -57,7 +57,11 @@ func (d *ChannelDataSource) Metadata(ctx context.Context, req datasource.Metadat
 func (d *ChannelDataSource) Schema(ctx context.Context, req datasource.SchemaRequest, resp *datasource.SchemaResponse) {
 	resp.Schema = schema.Schema{
 		// This description is used by the documentation generator and the language server.
-		MarkdownDescription: "Slack channel data source",
+		MarkdownDescription: `
+Reads a slack channel specified by name or id, and returns attributes.
+### Required Permissions
+- ` + "`channel:read`" + `
+`,
 
 		Attributes: map[string]schema.Attribute{
 			"name": schema.StringAttribute{

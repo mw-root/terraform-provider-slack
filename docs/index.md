@@ -3,12 +3,17 @@
 page_title: "slack Provider"
 subcategory: ""
 description: |-
-  
+  A provider to interact with and manage Slack resources.
+  A slack bot and its OAuth token is required to make use of this provider.
+  Each resource and data source will document the permissions (Bot Token Scopes) required to perform that operation.
 ---
 
 # slack Provider
 
+A provider to interact with and manage Slack resources.
 
+A slack bot and its OAuth token is required to make use of this provider. 
+Each resource and data source will document the permissions (Bot Token Scopes) required to perform that operation.
 
 ## Example Usage
 

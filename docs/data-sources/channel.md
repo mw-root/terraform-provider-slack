@@ -3,12 +3,16 @@
 page_title: "slack_channel Data Source - slack"
 subcategory: ""
 description: |-
-  Slack channel data source
+  Reads a slack channel specified by name or id, and returns attributes.
+  Required Permissions
+  channel:read
 ---
 
 # slack_channel (Data Source)
 
-Slack channel data source
+Reads a slack channel specified by name or id, and returns attributes.
+### Required Permissions
+- `channel:read`
 
 ## Example Usage
 

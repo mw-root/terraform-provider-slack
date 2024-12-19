@@ -86,13 +86,12 @@ func (p *SlackProvider) Configure(ctx context.Context, req provider.ConfigureReq
 
 func (p *SlackProvider) Resources(ctx context.Context) []func() resource.Resource {
 	return []func() resource.Resource{
-		// NewExampleResource,
+		NewChannelResource,
 	}
 }
 
 func (p *SlackProvider) DataSources(ctx context.Context) []func() datasource.DataSource {
 	return []func() datasource.DataSource{
-		// NewExampleDataSource,
 		NewChannelDataSource,
 	}
 }

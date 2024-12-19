@@ -18,14 +18,14 @@ func TestAccChannelDataSource(t *testing.T) {
 			{
 				Config: providerConfig + testAccChannelDataSourceConfig,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("data.slack_channel.test_by_name", "id", "C0861QDKL80"),
+					resource.TestCheckResourceAttr("data.slack_channel.test_by_name", "id", "C085M89VBFH"),
 					resource.TestCheckResourceAttr("data.slack_channel.test_by_id", "name", "test-channel"),
 				),
 			},
 			{
 				Config: providerConfig + testAccChannelDoesNotExistDataSourceConfig,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("data.slack_channel.does_not_exist", "id", "C0861QDKL80"),
+					resource.TestCheckResourceAttr("data.slack_channel.does_not_exist", "id", "C085M89VBFH"),
 				),
 				ExpectError: regexp.MustCompile(`Unable to find channel`),
 			},
@@ -38,7 +38,7 @@ data "slack_channel" "test_by_name" {
   name = "test-channel"
 }
 data "slack_channel" "test_by_id" {
-  id = "C0861QDKL80"
+  id = "C085M89VBFH"
 }
 `
 

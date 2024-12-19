@@ -27,12 +27,12 @@ func NewChannelDataSource() datasource.DataSource {
 	return &ChannelDataSource{}
 }
 
-// ExampleDataSource defines the data source implementation.
+// ChannelDataSource defines the data source implementation.
 type ChannelDataSource struct {
 	client *slack.Client
 }
 
-// ExampleDataSourceModel describes the data source data model.
+// ChannelDataSourceModel describes the data source data model.
 type ChannelDataSourceModel struct {
 	Name            types.String `tfsdk:"name"`
 	Id              types.String `tfsdk:"id"`

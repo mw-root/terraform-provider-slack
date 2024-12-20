@@ -87,5 +87,8 @@ jobs:
       - env:
           TF_ACC: "1"
           SLACK_TOKEN: ${{ secrets.SLACK_TOKEN }}
-        run: go test -v -cover ./internal/provider/
+        run: go test -v -race -covermode=atomic -coverprofile=coverage.out ./internal/provider/
         timeout-minutes: 10
+      - name: Upload coverage to Codecov
+        if: ${{ matrix.terraform  == '1.10.*' }}
+        uses: codecov/codecov-action@v3

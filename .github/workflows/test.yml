@@ -92,3 +92,6 @@ jobs:
       - name: Upload coverage to Codecov
         if: ${{ matrix.terraform  == '1.10.*' }}
         uses: codecov/codecov-action@v3
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          slug: mw-root/terraform-provider-slack

@@ -10,6 +10,9 @@ import (
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
 )
 
+const testDataSourceChannelName = "test-channel"
+const testDataSourceChannelId = "C085M89VBFH"
+
 func TestAccChannelDataSource(t *testing.T) {
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t) },
@@ -18,14 +21,14 @@ func TestAccChannelDataSource(t *testing.T) {
 			{
 				Config: providerConfig + testAccChannelDataSourceConfig,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("data.slack_channel.test_by_name", "id", "C085M89VBFH"),
-					resource.TestCheckResourceAttr("data.slack_channel.test_by_id", "name", "test-channel"),
+					resource.TestCheckResourceAttr("data.slack_channel.test_by_name", "id", testDataSourceChannelId),
+					resource.TestCheckResourceAttr("data.slack_channel.test_by_id", "name", testDataSourceChannelName),
 				),
 			},
 			{
 				Config: providerConfig + testAccChannelDoesNotExistDataSourceConfig,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("data.slack_channel.does_not_exist", "id", "C085M89VBFH"),
+					resource.TestCheckResourceAttr("data.slack_channel.does_not_exist", "id", ""),
 				),
 				ExpectError: regexp.MustCompile(`Unable to find channel`),
 			},
@@ -35,10 +38,10 @@ func TestAccChannelDataSource(t *testing.T) {
 
 const testAccChannelDataSourceConfig = `
 data "slack_channel" "test_by_name" {
-  name = "test-channel"
+  name = "` + testDataSourceChannelName + `"
 }
 data "slack_channel" "test_by_id" {
-  id = "C085M89VBFH"
+  id = "` + testDataSourceChannelId + `"
 }
 `
 

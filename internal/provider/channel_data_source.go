@@ -118,6 +118,9 @@ func getChannelById(ctx context.Context, client *slack.Client, id string) (slack
 			IncludeNumMembers: false,
 		},
 	)
+	if err != nil {
+		return slack.Channel{}, err
+	}
 	return *channel, err
 
 }

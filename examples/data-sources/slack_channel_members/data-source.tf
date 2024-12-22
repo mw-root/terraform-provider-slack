@@ -1,3 +1,3 @@
-data "slack_channel_members" "memebers" {
+data "slack_channel_members" "members" {
   id = "CXXXXXXXXXX"
 }

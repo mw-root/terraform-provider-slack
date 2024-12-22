@@ -3,21 +3,21 @@
 page_title: "slack_channel_members Data Source - slack"
 subcategory: ""
 description: |-
-  Gets the Slack IDs of channel members.
+  Gets the Slack IDs of a given channel's members.
   Required Permissions
   channels:read
 ---
 
 # slack_channel_members (Data Source)
 
-Gets the Slack IDs of channel members.
+Gets the Slack IDs of a given channel's members.
 ### Required Permissions
 - `channels:read`
 
 ## Example Usage
 
 ```terraform
-data "slack_channel_members" "memebers" {
+data "slack_channel_members" "members" {
   id = "CXXXXXXXXXX"
 }
 ```

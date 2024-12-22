@@ -17,7 +17,12 @@ Reads a slack channel specified by name or id, and returns attributes.
 ## Example Usage
 
 ```terraform
-data "slack_channel" "channel" {
+data "slack_channel" "channel_by_id" {
+  name = "CXXXXXXXXXX"
+}
+
+
+data "slack_channel" "channel_by_name" {
   name = "some-channel"
 }
 ```

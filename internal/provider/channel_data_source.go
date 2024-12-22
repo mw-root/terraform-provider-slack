@@ -147,6 +147,7 @@ func getChannelByName(ctx context.Context, client *slack.Client, name string, ex
 	}
 
 	tflog.Trace(ctx, "Channel not found in page.")
+
 	for next != "" {
 		tflog.Trace(ctx, "Requesting Page of Slack Channels")
 		channels, next, err = client.GetConversationsContext(

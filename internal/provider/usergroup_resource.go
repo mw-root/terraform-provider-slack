@@ -6,6 +6,7 @@ package provider
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"github.com/slack-go/slack"
 
@@ -158,9 +159,7 @@ func (r *UserGroupResource) Read(ctx context.Context, req resource.ReadRequest, 
 		return
 	}
 
-	userGroups, err := client.GetUserGroupsContext(
-		ctx,
-	)
+	userGroups, err := userGroupsList(ctx, client)
 
 	if err != nil {
 		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to find User Group, got error: %s", err))
@@ -238,4 +237,35 @@ func (r *UserGroupResource) Delete(ctx context.Context, req resource.DeleteReque
 
 func (r *UserGroupResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
 	resource.ImportStatePassthroughID(ctx, path.Root("id"), req, resp)
+}
+
+func userGroupsList(ctx context.Context, api *slack.Client) ([]slack.UserGroup, error) {
+
+	var err error
+	var userGroups []slack.UserGroup
+
+	err = nil
+
+	for err == nil {
+		userGroups, err = api.GetUserGroupsContext(
+			ctx,
+		)
+
+		if rateLimitedError, ok := err.(*slack.RateLimitedError); ok {
+			select {
+			case <-ctx.Done():
+				err = ctx.Err()
+			case <-time.After(rateLimitedError.RetryAfter):
+				err = nil
+			}
+		}
+
+		if err != nil {
+			return nil, fmt.Errorf("couldn't get conversation context: %s", err.Error())
+		} else {
+			break
+		}
+	}
+
+	return userGroups, nil
 }

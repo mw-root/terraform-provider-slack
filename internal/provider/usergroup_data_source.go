@@ -122,9 +122,7 @@ func (d *UserGroupDataSource) Read(ctx context.Context, req datasource.ReadReque
 		return
 	}
 
-	userGroups, err := client.GetUserGroupsContext(
-		ctx,
-	)
+	userGroups, err := userGroupsList(ctx, client)
 
 	if err != nil {
 		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to find User Group, got error: %s", err))

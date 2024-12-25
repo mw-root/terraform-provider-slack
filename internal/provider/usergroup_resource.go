@@ -251,10 +251,17 @@ func userGroupsList(ctx context.Context, api *slack.Client) ([]slack.UserGroup, 
 			ctx,
 		)
 
+		if err == nil {
+			break
+		}
+
 		if rateLimitedError, ok := err.(*slack.RateLimitedError); ok {
+
+			tflog.Debug(ctx, rateLimitedError.Error())
 			select {
 			case <-ctx.Done():
 				err = ctx.Err()
+				tflog.Error(ctx, "Context is Done. "+err.Error())
 			case <-time.After(rateLimitedError.RetryAfter):
 				err = nil
 			}
@@ -262,8 +269,6 @@ func userGroupsList(ctx context.Context, api *slack.Client) ([]slack.UserGroup, 
 
 		if err != nil {
 			return nil, fmt.Errorf("couldn't get conversation context: %s", err.Error())
-		} else {
-			break
 		}
 	}
 

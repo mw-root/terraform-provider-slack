@@ -84,12 +84,13 @@ jobs:
           terraform_version: ${{ matrix.terraform }}
           terraform_wrapper: false
       - run: go mod download
-      - env:
+      - name: Run Tests
+        env:
           TF_ACC: "1"
           SLACK_TOKEN: ${{ secrets.SLACK_TOKEN }}
         run: go test -v -race -covermode=atomic -coverprofile=coverage.out ./internal/provider/
         timeout-minutes: 10
-      - name: Upload coverage to Codecov
+      - name: Upload to Codecov
         if: ${{ matrix.terraform  == '1.10.*' }}
         uses: codecov/codecov-action@1e68e06f1dbfde0e4cefc87efeba9e4643565303 # v5
         with:

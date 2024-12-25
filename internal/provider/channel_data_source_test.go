@@ -47,6 +47,7 @@ data "slack_channel" "test_by_id" {
 
 const testAccChannelDoesNotExistDataSourceConfig = `
 data "slack_channel" "does_not_exist" {
-  name = "steve"
+  name             = "steve"
+  include_archived = false
 }
 `

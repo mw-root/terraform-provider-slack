@@ -17,5 +17,8 @@
         "branchTopic": "{{{datasource}}}-{{{depNameSanitized}}}-vulnerability",
         "prCreation": "immediate",
         "vulnerabilityFixStrategy": "lowest"
+    },
+    "pre-commit": {
+        "enabled": true
     }
 }

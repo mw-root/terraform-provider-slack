@@ -19,3 +19,10 @@ repos:
       - id: go-unit-tests
       - id: go-build
       - id: go-mod-tidy
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.4.0
+    hooks:
+      - id: check-json
+      - id: check-yaml
+      - id: check-merge-conflict
+      - id: end-of-file-fixer

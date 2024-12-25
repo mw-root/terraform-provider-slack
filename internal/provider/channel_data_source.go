@@ -6,6 +6,7 @@ package provider
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"github.com/slack-go/slack"
 
@@ -127,51 +128,62 @@ func getChannelById(ctx context.Context, client *slack.Client, id string) (slack
 
 func getChannelByName(ctx context.Context, client *slack.Client, name string, excludeArchived bool) (slack.Channel, error) {
 
-	tflog.Trace(ctx, "Requesting Page of Slack Channels")
+	var err error
+	var nextCursor string
+	var channels []slack.Channel
 
-	channels, next, err := client.GetConversationsContext(
-		ctx,
-		&slack.GetConversationsParameters{
+	err = nil
+	nextCursor = ""
+
+	for err == nil {
+
+		tflog.Trace(ctx, fmt.Sprintf("Exclude Archived: %t", excludeArchived))
+		params := &slack.GetConversationsParameters{
 			ExcludeArchived: excludeArchived,
-		},
-	)
-
-	if err != nil {
-		return slack.Channel{}, err
-	}
-
-	for _, channel := range channels {
-		if channel.Name == name {
-			return channel, nil
+			Cursor:          nextCursor,
 		}
-	}
 
-	tflog.Trace(ctx, "Channel not found in page.")
+		tflog.Trace(ctx, "Next Cursor: "+nextCursor)
 
-	for next != "" {
-		tflog.Trace(ctx, "Requesting Page of Slack Channels")
-		channels, next, err = client.GetConversationsContext(
+		channels, nextCursor, err = client.GetConversationsContext(
 			ctx,
-			&slack.GetConversationsParameters{
-				ExcludeArchived: excludeArchived,
-				Cursor:          next,
-			},
+			params,
 		)
-		if err != nil {
-			return slack.Channel{}, err
-		}
 
-		for _, channel := range channels {
-			if channel.Name == name {
-				tflog.Trace(ctx, "Found channel: "+name)
-				return channel, nil
+		if err == nil {
+			tflog.Trace(ctx, "Searching Page for: "+name)
+
+			for _, channel := range channels {
+				tflog.Trace(ctx, "Channel Name: "+channel.Name)
+				if channel.Name == name {
+					tflog.Trace(ctx, "Found channel: "+name)
+					return channel, nil
+				}
+			}
+			tflog.Trace(ctx, "Channel not found in page.")
+
+			if nextCursor == "" {
+				tflog.Trace(ctx, "We have reached the last page of results and have not found this channel.")
+				return slack.Channel{}, fmt.Errorf("channel_not_found")
+			}
+
+			continue
+
+		} else if rateLimitedError, ok := err.(*slack.RateLimitedError); ok {
+
+			tflog.Trace(ctx, rateLimitedError.Error())
+			select {
+			case <-ctx.Done():
+				err = ctx.Err()
+				tflog.Error(ctx, "Context is Done. "+err.Error())
+			case <-time.After(rateLimitedError.RetryAfter):
+				err = nil
 			}
 		}
-		tflog.Trace(ctx, "Channel not found in page.")
+
 	}
 
-	return slack.Channel{}, fmt.Errorf("channel: %s not found", name)
-
+	return slack.Channel{}, fmt.Errorf("error listing channels: %s", err.Error())
 }
 
 func (d *ChannelDataSource) Read(ctx context.Context, req datasource.ReadRequest, resp *datasource.ReadResponse) {

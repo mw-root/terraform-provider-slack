@@ -129,21 +129,22 @@ func getChannelById(ctx context.Context, client *slack.Client, id string) (slack
 func getChannelByName(ctx context.Context, client *slack.Client, name string, excludeArchived bool) (slack.Channel, error) {
 
 	var err error
+	var cursor string
 	var nextCursor string
 	var channels []slack.Channel
 
 	err = nil
-	nextCursor = ""
+	cursor = ""
 
 	for err == nil {
 
 		tflog.Trace(ctx, fmt.Sprintf("Exclude Archived: %t", excludeArchived))
 		params := &slack.GetConversationsParameters{
 			ExcludeArchived: excludeArchived,
-			Cursor:          nextCursor,
+			Cursor:          cursor,
 		}
 
-		tflog.Trace(ctx, "Next Cursor: "+nextCursor)
+		tflog.Trace(ctx, "Next Cursor: "+cursor)
 
 		channels, nextCursor, err = client.GetConversationsContext(
 			ctx,
@@ -166,7 +167,7 @@ func getChannelByName(ctx context.Context, client *slack.Client, name string, ex
 				tflog.Trace(ctx, "We have reached the last page of results and have not found this channel.")
 				return slack.Channel{}, fmt.Errorf("channel_not_found")
 			}
-
+			cursor = nextCursor
 			continue
 
 		} else if rateLimitedError, ok := err.(*slack.RateLimitedError); ok {

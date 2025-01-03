@@ -155,7 +155,6 @@ func getChannelByName(ctx context.Context, client *slack.Client, name string, ex
 			tflog.Trace(ctx, "Searching Page for: "+name)
 
 			for _, channel := range channels {
-				tflog.Trace(ctx, "Channel Name: "+channel.Name)
 				if channel.Name == name {
 					tflog.Trace(ctx, "Found channel: "+name)
 					return channel, nil

@@ -18,6 +18,8 @@ import (
 	"github.com/hashicorp/terraform-plugin-log/tflog"
 )
 
+const channelListPageLimit = 1000
+
 // Ensure provider defined types fully satisfy framework interfaces.
 var (
 	_ datasource.DataSource              = &ChannelDataSource{}
@@ -142,6 +144,7 @@ func getChannelByName(ctx context.Context, client *slack.Client, name string, ex
 		params := &slack.GetConversationsParameters{
 			ExcludeArchived: excludeArchived,
 			Cursor:          cursor,
+			Limit:           channelListPageLimit,
 		}
 
 		tflog.Trace(ctx, "Next Cursor: "+cursor)

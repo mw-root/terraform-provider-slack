@@ -5,7 +5,7 @@ subcategory: ""
 description: |-
   Reads a slack user specified by name or id, and returns attributes.
   Required Permissions
-  users:read
+  users:readusers:read.email (Only if email is used as an input)
 ---
 
 # slack_user (Data Source)
@@ -13,6 +13,7 @@ description: |-
 Reads a slack user specified by name or id, and returns attributes.
 ### Required Permissions
 - `users:read`
+- `users:read.email` (Only if `email` is used as an input)
 
 ## Example Usage
 
@@ -32,7 +33,9 @@ data "slack_user" "user_by_name" {
 
 ### Optional
 
+- `email` (String) Email address of the user.
 - `id` (String) Identifier for this workspace user. It is unique to the workspace containing the user.
+- `include_deactivated` (Boolean) Indicates whether the user is an Admin of the current workspace.
 - `name` (String) The Slack handle of the user
 
 ### Read-Only

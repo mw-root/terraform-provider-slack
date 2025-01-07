@@ -35,14 +35,15 @@ type UserDataSource struct {
 
 // UserDataSourceModel describes the data source data model.
 type UserDataSourceModel struct {
-	Id       types.String `tfsdk:"id"`
-	Name     types.String `tfsdk:"name"`
-	Email    types.String `tfsdk:"email"`
-	RealName types.String `tfsdk:"real_name"`
-	Deleted  types.Bool   `tfsdk:"deleted"`
-	TimeZone types.String `tfsdk:"time_zone"`
-	IsAdmin  types.Bool   `tfsdk:"is_admin"`
-	IsBot    types.Bool   `tfsdk:"is_bot"`
+	Id                 types.String `tfsdk:"id"`
+	Name               types.String `tfsdk:"name"`
+	Email              types.String `tfsdk:"email"`
+	IncludeDeactivated types.Bool   `tfsdk:"include_deactivated"`
+	RealName           types.String `tfsdk:"real_name"`
+	Deleted            types.Bool   `tfsdk:"deleted"`
+	TimeZone           types.String `tfsdk:"time_zone"`
+	IsAdmin            types.Bool   `tfsdk:"is_admin"`
+	IsBot              types.Bool   `tfsdk:"is_bot"`
 }
 
 func (d *UserDataSource) ConfigValidators(ctx context.Context) []datasource.ConfigValidator {
@@ -83,6 +84,10 @@ Reads a slack user specified by name or id, and returns attributes.
 				MarkdownDescription: "Email address of the user.",
 				Optional:            true,
 				Computed:            true,
+			},
+			"include_deactivated": schema.BoolAttribute{
+				MarkdownDescription: "Indicates whether the user is an Admin of the current workspace.",
+				Optional:            true,
 			},
 			"real_name": schema.StringAttribute{
 				MarkdownDescription: "The user's first and last name.",
@@ -145,7 +150,7 @@ func (d *UserDataSource) Read(ctx context.Context, req datasource.ReadRequest, r
 		user, err = d.client.GetUserInfoContext(ctx, data.Id.ValueString())
 
 	case !data.Email.IsNull():
-		user, err = d.client.GetUserByEmailContext(ctx, data.Email.ValueString())
+		user, err = getUserByEmail(ctx, d.client, data.Email.ValueString(), data.IncludeDeactivated.ValueBool())
 
 	default:
 		user, err = getUserByName(ctx, d.client, data.Name.ValueString())
@@ -208,4 +213,36 @@ func getUserByName(ctx context.Context, client *slack.Client, name string) (*sla
 
 	return &slack.User{}, fmt.Errorf("user: %s not found", name)
 
+}
+
+func getUserByEmail(ctx context.Context, client *slack.Client, email string, includeDeactivated bool) (*slack.User, error) {
+
+	tflog.Trace(ctx, "Requesting Page of Slack Users")
+
+	user, err := client.GetUserByEmailContext(ctx, email)
+
+	if err == nil {
+		return user, nil
+	} else {
+		if err.Error() == "users_not_found" && includeDeactivated {
+			tflog.Trace(ctx, "User not found in active users.")
+		} else {
+			return &slack.User{}, err
+		}
+	}
+	tflog.Trace(ctx, "Searching inactive users.")
+
+	users, err := client.GetUsersContext(ctx)
+
+	if err != nil {
+		return &slack.User{}, err
+	}
+
+	for _, user := range users {
+		if user.Profile.Email == email {
+			return &user, nil
+		}
+	}
+
+	return &slack.User{}, fmt.Errorf("user: %s not found", email)
 }

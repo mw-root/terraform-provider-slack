@@ -26,7 +26,14 @@ func TestAccUserDataSource(t *testing.T) {
 				),
 			},
 			{
-				Config: providerConfig + testAccUserDoesNotExistDataSourceConfig,
+				Config: providerConfig + testAccUserNameDoesNotExistDataSourceConfig,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr("data.slack_user.does_not_exist", "id", ""),
+				),
+				ExpectError: regexp.MustCompile(`Unable to find user`),
+			},
+			{
+				Config: providerConfig + testAccUserEmailDoesNotExistDataSourceConfig,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("data.slack_user.does_not_exist", "id", ""),
 				),
@@ -45,8 +52,15 @@ data "slack_user" "test_by_id" {
 }
 `
 
-const testAccUserDoesNotExistDataSourceConfig = `
+const testAccUserNameDoesNotExistDataSourceConfig = `
 data "slack_user" "does_not_exist" {
   name = "abcde"
+}
+`
+
+const testAccUserEmailDoesNotExistDataSourceConfig = `
+data "slack_user" "does_not_exist" {
+  email               = "dne@example.com"
+  include_deactivated = true
 }
 `

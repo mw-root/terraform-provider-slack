@@ -37,6 +37,7 @@ type UserDataSource struct {
 type UserDataSourceModel struct {
 	Id       types.String `tfsdk:"id"`
 	Name     types.String `tfsdk:"name"`
+	Email    types.String `tfsdk:"email"`
 	RealName types.String `tfsdk:"real_name"`
 	Deleted  types.Bool   `tfsdk:"deleted"`
 	TimeZone types.String `tfsdk:"time_zone"`
@@ -49,6 +50,7 @@ func (d *UserDataSource) ConfigValidators(ctx context.Context) []datasource.Conf
 		datasourcevalidator.Conflicting(
 			path.MatchRoot("id"),
 			path.MatchRoot("name"),
+			path.MatchRoot("email"),
 		),
 	}
 }
@@ -64,6 +66,7 @@ func (d *UserDataSource) Schema(ctx context.Context, req datasource.SchemaReques
 Reads a slack user specified by name or id, and returns attributes.
 ### Required Permissions
 - ` + "`users:read`" + `
+- ` + "`users:read.email`" + ` # Only if ` + "`email`" + ` is used as an input
 `,
 		Attributes: map[string]schema.Attribute{
 			"name": schema.StringAttribute{
@@ -73,6 +76,11 @@ Reads a slack user specified by name or id, and returns attributes.
 			},
 			"id": schema.StringAttribute{
 				MarkdownDescription: "Identifier for this workspace user. It is unique to the workspace containing the user.",
+				Optional:            true,
+				Computed:            true,
+			},
+			"email": schema.StringAttribute{
+				MarkdownDescription: "Email address of the user.",
 				Optional:            true,
 				Computed:            true,
 			},
@@ -122,7 +130,7 @@ func (d *UserDataSource) Configure(ctx context.Context, req datasource.Configure
 
 func (d *UserDataSource) Read(ctx context.Context, req datasource.ReadRequest, resp *datasource.ReadResponse) {
 	var data UserDataSourceModel
-	var user slack.User
+	var user *slack.User
 	var err error
 
 	// Read Terraform configuration data into the model
@@ -132,9 +140,14 @@ func (d *UserDataSource) Read(ctx context.Context, req datasource.ReadRequest, r
 		return
 	}
 
-	if data.Id.ValueString() != "" {
-		user, err = getUserById(ctx, d.client, data.Id.ValueString())
-	} else {
+	switch {
+	case !data.Id.IsNull():
+		user, err = d.client.GetUserInfoContext(ctx, data.Id.ValueString())
+
+	case !data.Email.IsNull():
+		user, err = d.client.GetUserByEmailContext(ctx, data.Email.ValueString())
+
+	default:
 		user, err = getUserByName(ctx, d.client, data.Name.ValueString())
 	}
 
@@ -146,6 +159,7 @@ func (d *UserDataSource) Read(ctx context.Context, req datasource.ReadRequest, r
 	// Set data from API response.
 	data.Id = types.StringValue(user.ID)
 	data.Name = types.StringValue(user.Name)
+	data.Email = types.StringValue(user.Profile.Email)
 	data.RealName = types.StringValue(user.RealName)
 	data.Deleted = types.BoolValue(user.Deleted)
 	data.TimeZone = types.StringValue(user.TZ)
@@ -156,18 +170,10 @@ func (d *UserDataSource) Read(ctx context.Context, req datasource.ReadRequest, r
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
 }
 
-func getUserById(ctx context.Context, client *slack.Client, id string) (slack.User, error) {
-	user, err := client.GetUserInfoContext(ctx, id)
-	if err != nil {
-		return slack.User{}, err
-	}
-	return *user, err
-}
-
 // This is basically the logic in slack.GetUsersContext.
 // This is exploded here instead of using that method to ensure we're checking
 // each returned page, potentially saving some API calls.
-func getUserByName(ctx context.Context, client *slack.Client, name string) (slack.User, error) {
+func getUserByName(ctx context.Context, client *slack.Client, name string) (*slack.User, error) {
 
 	tflog.Trace(ctx, "Requesting Page of Slack Users")
 
@@ -178,7 +184,7 @@ func getUserByName(ctx context.Context, client *slack.Client, name string) (slac
 
 	for _, user := range page.Users {
 		if user.Name == name {
-			return user, nil
+			return &user, nil
 		}
 	}
 
@@ -187,7 +193,7 @@ func getUserByName(ctx context.Context, client *slack.Client, name string) (slac
 		if err == nil {
 			for _, user := range page.Users {
 				if user.Name == name {
-					return user, nil
+					return &user, nil
 				}
 			}
 		} else if rateLimitedError, ok := err.(*slack.RateLimitedError); ok {
@@ -200,6 +206,6 @@ func getUserByName(ctx context.Context, client *slack.Client, name string) (slac
 		}
 	}
 
-	return slack.User{}, fmt.Errorf("user: %s not found", name)
+	return &slack.User{}, fmt.Errorf("user: %s not found", name)
 
 }

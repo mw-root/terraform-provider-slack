@@ -1,3 +1,6 @@
+[![codecov](https://codecov.io/gh/mw-root/terraform-provider-slack/graph/badge.svg?token=NRR7EF3Q1B)](https://codecov.io/gh/mw-root/terraform-provider-slack)
+[![Tests](https://github.com/mw-root/terraform-provider-slack/actions/workflows/test.yml/badge.svg)](https://github.com/mw-root/terraform-provider-slack/actions/workflows/test.yml)
+
 ## Terraform Provider Slack
 This project aims to be an up to date, and well-maintained provider for slack.
 

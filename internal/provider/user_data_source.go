@@ -67,7 +67,7 @@ func (d *UserDataSource) Schema(ctx context.Context, req datasource.SchemaReques
 Reads a slack user specified by name or id, and returns attributes.
 ### Required Permissions
 - ` + "`users:read`" + `
-- ` + "`users:read.email`" + ` # Only if ` + "`email`" + ` is used as an input
+- ` + "`users:read.email`" + ` (Only if ` + "`email`" + ` is used as an input)
 `,
 		Attributes: map[string]schema.Attribute{
 			"name": schema.StringAttribute{

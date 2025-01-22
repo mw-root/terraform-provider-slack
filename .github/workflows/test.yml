@@ -92,7 +92,7 @@ jobs:
         timeout-minutes: 10
       - name: Upload to Codecov
         if: ${{ matrix.terraform  == '1.10.*' }}
-        uses: codecov/codecov-action@1e68e06f1dbfde0e4cefc87efeba9e4643565303 # v5
+        uses: codecov/codecov-action@5a605bd92782ce0810fa3b8acc235c921b497052 # v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           slug: mw-root/terraform-provider-slack

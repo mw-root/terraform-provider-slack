@@ -3,12 +3,12 @@ module tools
 go 1.22.7
 
 require (
-	github.com/hashicorp/copywrite v0.19.0
+	github.com/hashicorp/copywrite v0.20.0
 	github.com/hashicorp/terraform-plugin-docs v0.20.1
 )
 
 require (
-	github.com/AlecAivazis/survey/v2 v2.3.6 // indirect
+	github.com/AlecAivazis/survey/v2 v2.3.7 // indirect
 	github.com/BurntSushi/toml v1.2.1 // indirect
 	github.com/Kunde21/markdownfmt/v3 v3.1.0 // indirect
 	github.com/Masterminds/goutils v1.1.1 // indirect

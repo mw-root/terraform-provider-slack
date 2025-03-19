@@ -1,6 +1,6 @@
 module github.com/mw-root/terraform-provider-slack
 
-go 1.22.7
+go 1.23
 
 require (
 	github.com/hashicorp/terraform-plugin-framework v1.14.1

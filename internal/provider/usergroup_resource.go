@@ -77,6 +77,7 @@ Creates a Slack User Group.
 							sr planmodifier.StringRequest,
 							rrifr *stringplanmodifier.RequiresReplaceIfFuncResponse,
 						) {
+							//nolint:staticcheck // QF1001
 							rrifr.RequiresReplace = !(sr.StateValue.ValueString() == "") && sr.PlanValue.ValueString() == ""
 						},
 						"Handle cannot be removed once it is set.",

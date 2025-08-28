@@ -14,8 +14,8 @@ on:
       - 'README.md'
 
 concurrency:
-  group: ${{ github.workflow }}-build-and-test
-  cancel-in-progress: false
+  group: ${{ github.workflow }}-${{github.ref}}-build-and-test
+  cancel-in-progress: true
 
 # Testing only needs permissions to read the repository contents.
 permissions:

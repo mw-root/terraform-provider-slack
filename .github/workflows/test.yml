@@ -8,7 +8,7 @@ on:
     paths-ignore:
       - 'README.md'
   push:
-    branches: 
+    branches:
       - main
     paths-ignore:
       - 'README.md'
@@ -72,13 +72,9 @@ jobs:
       matrix:
         # list whatever Terraform versions here you would like to support
         terraform:
-          - '1.5.*'
-          - '1.6.*'
-          - '1.7.*'
-          - '1.8.*'
-          - '1.9.*'
-          - '1.10.*'
-          - '1.11.*'
+          - '1.15.*'
+          - '1.14.*'
+          - '1.13.*'
           - '1.12.*'
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
@@ -90,6 +86,8 @@ jobs:
         with:
           terraform_version: ${{ matrix.terraform }}
           terraform_wrapper: false
+      - name: Terraform Version
+        run: terraform -version
       - run: go mod download
       - name: Run Tests
         env:
@@ -98,7 +96,7 @@ jobs:
         run: go test -v -race -covermode=atomic -coverprofile=coverage.out ./internal/provider/
         timeout-minutes: 10
       - name: Upload to Codecov
-        if: ${{ matrix.terraform  == '1.10.*' }}
+        if: ${{ matrix.terraform  == '1.15.*' }}
         uses: codecov/codecov-action@57e3a136b779b570ffcdbf80b3bdc90e7fab3de2 # v6
         with:
           token: ${{ secrets.CODECOV_TOKEN }}

@@ -1,4 +1,4 @@
-// Copyright (c) HashiCorp, Inc.
+// Copyright github.com/mw-root 2021, 2026
 // SPDX-License-Identifier: MPL-2.0
 
 package main

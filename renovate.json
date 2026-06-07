@@ -39,11 +39,6 @@
   },
   "packageRules": [
     {
-      "matchManagers": [
-        "github-actions"
-      ]
-    },
-    {
       "description": "Group all GitHub Actions updates into a single PR",
       "groupName": "Minor and patch GitHub Actions updates",
       "matchManagers": [

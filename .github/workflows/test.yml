@@ -72,10 +72,10 @@ jobs:
       matrix:
         # list whatever Terraform versions here you would like to support
         terraform:
+          - '1.16.*'
           - '1.15.*'
           - '1.14.*'
           - '1.13.*'
-          - '1.12.*'
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
       - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
@@ -96,7 +96,7 @@ jobs:
         run: go test -v -race -covermode=atomic -coverprofile=coverage.out ./internal/provider/
         timeout-minutes: 10
       - name: Upload to Codecov
-        if: ${{ matrix.terraform  == '1.15.*' }}
+        if: ${{ matrix.terraform  == '1.16.*' }}
         uses: codecov/codecov-action@fb8b3582c8e4def4969c97caa2f19720cb33a72f # v7.0.0
         with:
           token: ${{ secrets.CODECOV_TOKEN }}

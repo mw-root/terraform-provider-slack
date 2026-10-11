@@ -1,6 +1,6 @@
 module github.com/mw-root/terraform-provider-slack
 
-go 1.25.8
+go 1.26
 
 toolchain go1.27.1
 
@@ -10,7 +10,7 @@ require (
 	github.com/hashicorp/terraform-plugin-go v0.31.0
 	github.com/hashicorp/terraform-plugin-log v0.11.0
 	github.com/hashicorp/terraform-plugin-testing v1.16.0
-	github.com/slack-go/slack v0.29.0
+	github.com/slack-go/slack v0.30.1
 )
 
 require (

@@ -43,6 +43,8 @@ func (p *SlackProvider) Schema(ctx context.Context, req provider.SchemaRequest, 
 		MarkdownDescription: `
 A provider to interact with and manage Slack resources.
 
+This is a general purpose Slack provider that was created specifically to handle deactivated users.
+
 A slack bot and its OAuth token is required to make use of this provider. 
 Each resource and data source will document the permissions (Bot Token Scopes) required to perform that operation.
 `,
